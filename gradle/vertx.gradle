@@ -223,3 +223,26 @@ plugins.withType(IdeaPlugin) {
     }
   }
 }
+
+task runVertx(dependsOn: copyMod, description:'run vertx in separate JVM process with debugging enabled') << {
+	dev exit = javaexec {
+		classpath sourceSets.main.compileClasspath
+		classpath configurations.runtime
+		
+		println("classpath: " + classpath.getFiles())
+		
+		jvmArgs "-Dvertx.clusterManagerFactory=org.vertx.java.spi.cluster.impl.hazelcast.HazelcastClusterManagerFactory"
+		jvmArgs "-Dvertx.mods=build/mods"
+		jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5555"
+		
+				
+		println("jvmArgs  : " + jvmArgs)	
+		// println("sysProps : " + systemProperties)		
+		
+		args = ["runmod", moduleName]
+		println("args   : " + args)
+			
+		
+		main = 'org.vertx.java.platform.impl.cli.Starter'
+	}
+}
